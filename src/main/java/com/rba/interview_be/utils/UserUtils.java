@@ -7,6 +7,8 @@ import java.util.List;
 
 public class UserUtils {
 
+    private UserUtils() {}
+
     public static String extractLastCardStatus(List<UserCardStatusEntity> cardStatuses) {
         if(CollectionUtils.isEmpty(cardStatuses))
             return null;
