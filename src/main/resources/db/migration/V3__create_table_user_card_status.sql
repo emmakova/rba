@@ -6,3 +6,5 @@ CREATE TABLE RBA.user_card_status (
 
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES RBA.users(id)
 );
+
+CREATE INDEX idx_user_card_status_user_id ON RBA.user_card_status(user_id);
