@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: interview-be
+
+  datasource:
+    url: jdbc:h2:mem:rbadb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: RBA
+  flyway:
+    enabled: true
+    schemas: RBA
+    default-schema: RBA
+    locations: classpath:db/migration
