@@ -3,9 +3,11 @@ package com.rba.interview_be.mapper;
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
+import com.rba.interview_be.enums.CardStatusEnum;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.rba.interview_be.utils.UserUtils.extractLastCardStatus;
 
@@ -16,7 +18,7 @@ public class UserMapper {
             return null;
         }
 
-        String lastCardStatus = extractLastCardStatus(user.getCardStatuses());
+        CardStatusEnum lastCardStatus = Optional.ofNullable(extractLastCardStatus(user.getCardStatuses())).map(UserCardStatusEntity::getStatus).orElse(null);
 
         return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getOib(), lastCardStatus);
     }

@@ -7,12 +7,13 @@ import java.util.List;
 
 public class UserUtils {
 
-    private UserUtils() {}
+    private UserUtils() {
+    }
 
-    public static String extractLastCardStatus(List<UserCardStatusEntity> cardStatuses) {
-        if(CollectionUtils.isEmpty(cardStatuses))
+    public static UserCardStatusEntity extractLastCardStatus(List<UserCardStatusEntity> cardStatuses) {
+        if (CollectionUtils.isEmpty(cardStatuses))
             return null;
-        return cardStatuses.getFirst().getStatus();
+        return cardStatuses.getFirst();
     }
 
 }
