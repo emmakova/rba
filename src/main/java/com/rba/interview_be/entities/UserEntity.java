@@ -1,6 +1,7 @@
 package com.rba.interview_be.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +25,8 @@ public class UserEntity {
     private String lastName;
 
     @Column(name="oib", unique = true, nullable = false)
-    private Integer oib;
+    @Pattern(regexp = "\\d{11}")
+    private String oib;
 
     @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
     private List<UserCardStatusEntity> cardStatuses;
