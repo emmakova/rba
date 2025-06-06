@@ -1,4 +1,4 @@
-package com.rba.interview_be;
+package com.rba.interview_be.integration;
 
 import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.service.cardstatus.consumer.CardStatusConsumer;
