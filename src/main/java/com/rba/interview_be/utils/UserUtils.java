@@ -4,7 +4,9 @@ import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class UserUtils {
 
@@ -14,7 +16,9 @@ public class UserUtils {
     public static UserCardStatusEntity extractLastCardStatus(List<UserCardStatusEntity> cardStatuses) {
         if (CollectionUtils.isEmpty(cardStatuses))
             return null;
-        return cardStatuses.getFirst();
+        return cardStatuses.stream()
+                .filter(Objects::nonNull).max(Comparator.comparing(UserCardStatusEntity::getCreatedAt))
+                .orElse(null);
     }
 
     public static void addCardStatusToUser(UserEntity userEntity, UserCardStatusEntity status){
