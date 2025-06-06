@@ -40,4 +40,4 @@ spring:
 
 
 new-card-request-api:
-  base-url: http://localhost:9098
+  base-url: http://localhost:8089
