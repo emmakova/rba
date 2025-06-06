@@ -34,14 +34,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(
                 (root, query, builder) -> getUsersQueryPredicates(root, query, builder, searchUserFilter)
         );
-
     }
 
     @Override
     public UserEntity createUser(UserDto userDto) {
         UserEntity userEntity = UserMapper.toEntity(userDto);
         userRepository.save(userEntity);
-
         return userEntity;
     }
 
