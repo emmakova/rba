@@ -26,3 +26,7 @@ spring:
     schemas: RBA
     default-schema: RBA
     locations: classpath:db/migration
+
+
+new-card-request-api:
+  base-url: http://localhost:9098
