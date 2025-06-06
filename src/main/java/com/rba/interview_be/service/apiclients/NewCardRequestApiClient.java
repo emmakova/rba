@@ -1,4 +1,4 @@
-package com.rba.interview_be.service;
+package com.rba.interview_be.service.apiclients;
 
 import com.example.api.NewCardRequestApi;
 import com.example.invoker.ApiClient;

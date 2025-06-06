@@ -1,4 +1,4 @@
-package com.rba.interview_be.service;
+package com.rba.interview_be.service.cardstatus;
 
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;

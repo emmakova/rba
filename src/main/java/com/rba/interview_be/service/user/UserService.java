@@ -1,4 +1,4 @@
-package com.rba.interview_be.service;
+package com.rba.interview_be.service.user;
 
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;

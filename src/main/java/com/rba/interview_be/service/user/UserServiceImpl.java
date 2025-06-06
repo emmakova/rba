@@ -1,4 +1,4 @@
-package com.rba.interview_be.service;
+package com.rba.interview_be.service.user;
 
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
@@ -8,6 +8,8 @@ import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.mapper.UserMapper;
 import com.rba.interview_be.repository.UserRepository;
+import com.rba.interview_be.service.cardstatus.UserCardStatusService;
+import com.rba.interview_be.service.apiclients.NewCardRequestApiClient;
 import com.rba.interview_be.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +47,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserByOib(String oib) {
-
         userRepository.findByOib(oib).ifPresent(u -> {
             userCardStatusService.deleteAllForUser(u);
             userRepository.deleteById(u.getId());

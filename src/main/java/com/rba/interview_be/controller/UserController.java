@@ -4,7 +4,7 @@ import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
 
 import com.rba.interview_be.mapper.UserMapper;
-import com.rba.interview_be.service.UserService;
+import com.rba.interview_be.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
