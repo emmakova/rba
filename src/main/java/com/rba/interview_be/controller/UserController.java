@@ -2,11 +2,10 @@ package com.rba.interview_be.controller;
 
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
-import com.rba.interview_be.entities.UserEntity;
+
 import com.rba.interview_be.mapper.UserMapper;
 import com.rba.interview_be.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +37,18 @@ public class UserController {
 
     @DeleteMapping
     @RequestMapping("/by-oib/{oib}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String oib){
+    public ResponseEntity<Void> deleteUser(@PathVariable String oib) {
         userService.deleteUserByOib(oib);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping
+    @RequestMapping("/{userId}/new-card-request")
+    public ResponseEntity<UserDto> submitNewCardRequestForUser(@PathVariable Integer userId) {
+        return ResponseEntity.ok(
+                UserMapper.toDto(userService.submitNewCardRequestForUser(userId))
+        );
+
     }
 
 }

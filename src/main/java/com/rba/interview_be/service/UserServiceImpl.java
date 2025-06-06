@@ -4,8 +4,10 @@ import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
+import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.mapper.UserMapper;
 import com.rba.interview_be.repository.UserRepository;
+import com.rba.interview_be.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +17,13 @@ import java.util.List;
 import static com.rba.interview_be.service.queryspecifications.UsersQueryPredicateService.getUsersQueryPredicates;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserCardStatusService userCardStatusService;
+    private final NewCardRequestApiClient newCardRequestApiClient;
 
 
     @Override
@@ -31,24 +35,29 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    @Transactional
     public UserEntity createUser(UserDto userDto) {
         UserEntity userEntity = UserMapper.toEntity(userDto);
         userRepository.save(userEntity);
-
-        UserCardStatusEntity userCardStatusEntity = userCardStatusService.createNewCardStatusForUser(userEntity, userDto.cardStatus());
-        userEntity.setCardStatuses(List.of(userCardStatusEntity));
 
         return userEntity;
     }
 
     @Override
-    @Transactional
     public void deleteUserByOib(String oib) {
 
         userRepository.findByOib(oib).ifPresent(u -> {
             userCardStatusService.deleteAllForUser(u);
             userRepository.deleteById(u.getId());
         });
+    }
+
+    @Override
+    public UserEntity submitNewCardRequestForUser(Integer userId) {
+
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException()); //TODO create not found exception
+        newCardRequestApiClient.submitNewCardRequestForUser(user);
+        UserCardStatusEntity newCardStatusForUser = userCardStatusService.createNewCardStatusForUser(user, CardStatusEnum.PENDING);
+        UserUtils.addCardStatusToUser(user, newCardStatusForUser);
+        return user;
     }
 }

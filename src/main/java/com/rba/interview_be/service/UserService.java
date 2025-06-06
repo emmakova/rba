@@ -13,4 +13,6 @@ public interface UserService {
     UserEntity createUser(UserDto userDto);
 
     void deleteUserByOib(String oib);
+
+    UserEntity submitNewCardRequestForUser(Integer userId);
 }

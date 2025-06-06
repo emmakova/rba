@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,5 +30,5 @@ public class UserEntity {
     private String oib;
 
     @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
-    private List<UserCardStatusEntity> cardStatuses;
+    private List<UserCardStatusEntity> cardStatuses = new ArrayList<>();
 }
