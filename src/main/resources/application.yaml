@@ -29,6 +29,8 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
+      enabled: true
+      topic: card-status-topic
       group-id: cg-card-status
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
