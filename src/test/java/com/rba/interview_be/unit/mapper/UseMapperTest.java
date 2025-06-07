@@ -1,5 +1,6 @@
 package com.rba.interview_be.unit.mapper;
 
+import com.rba.interview_be.controller.dto.CardStatusDto;
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
@@ -15,37 +16,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UseMapperTest {
 
-    @Test
-    void toDto_shouldReturnNull_whenUserIsNull() {
-        assertThat(UserMapper.toDto(null)).isNull();
-    }
 
     @Test
-    void toDto_shouldMapFieldsCorrectly() {
-        UserEntity entity = new UserEntity();
-        entity.setId(1);
-        entity.setFirstName("Jane");
-        entity.setLastName("Doe");
-        entity.setOib("12345678901");
+    void toDto_fromUserEntity_shouldMapFieldsCorrectly() {
+        UserEntity user = new UserEntity();
+        user.setId(1);
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.setOib("12345678901");
 
         UserCardStatusEntity status = new UserCardStatusEntity();
+        status.setUser(user);
         status.setStatus(CardStatusEnum.APPROVED);
         status.setCreatedAt(Instant.now());
 
-        entity.setCardStatuses(List.of(status));
+        user.setCardStatuses(List.of(status));
 
-        UserDto dto = UserMapper.toDto(entity);
+        UserDto dto = UserMapper.toDto(user);
 
         assertThat(dto).isNotNull();
         assertThat(dto.id()).isEqualTo(1L);
         assertThat(dto.firstName()).isEqualTo("Jane");
         assertThat(dto.lastName()).isEqualTo("Doe");
         assertThat(dto.oib()).isEqualTo("12345678901");
-        assertThat(dto.cardStatus()).isEqualTo(CardStatusEnum.APPROVED);
+        assertThat(dto.lastCardStatus().cardStatus()).isEqualTo(CardStatusEnum.APPROVED);
     }
 
     @Test
-    void toDto_shouldReturnNullStatus_whenNoCardStatuses() {
+    void toDto_fromUserEntity_shouldReturnNullStatus_whenNoCardStatuses() {
         UserEntity entity = new UserEntity();
         entity.setId(2);
         entity.setFirstName("John");
@@ -56,7 +54,30 @@ public class UseMapperTest {
         UserDto dto = UserMapper.toDto(entity);
 
         assertThat(dto).isNotNull();
-        assertThat(dto.cardStatus()).isNull();
+        assertThat(dto.lastCardStatus()).isNull();
+    }
+
+    @Test
+    void toDto_fromUserCardStatusEntity_shouldMapFieldsCorrectly() {
+        UserEntity user = new UserEntity();
+        user.setId(1);
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.setOib("12345678901");
+
+        UserCardStatusEntity status = new UserCardStatusEntity();
+        status.setUser(user);
+        status.setStatus(CardStatusEnum.APPROVED);
+        status.setCreatedAt(Instant.now());
+
+        UserDto dto = UserMapper.toDto(status);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.firstName()).isEqualTo("Jane");
+        assertThat(dto.lastName()).isEqualTo("Doe");
+        assertThat(dto.oib()).isEqualTo("12345678901");
+        assertThat(dto.lastCardStatus().cardStatus()).isEqualTo(CardStatusEnum.APPROVED);
     }
 
     @Test
@@ -66,7 +87,7 @@ public class UseMapperTest {
 
     @Test
     void toEntity_shouldMapFieldsCorrectly() {
-        UserDto dto = new UserDto(1, "Ana", "Pavlovic", "11122233344", CardStatusEnum.REJECTED);
+        UserDto dto = new UserDto(1, "Ana", "Pavlovic", "11122233344", new CardStatusDto(1, 1, null, CardStatusEnum.REJECTED));
         UserEntity entity = UserMapper.toEntity(dto);
 
         assertThat(entity).isNotNull();

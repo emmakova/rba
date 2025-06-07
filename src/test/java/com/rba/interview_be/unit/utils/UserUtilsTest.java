@@ -16,7 +16,7 @@ public class UserUtilsTest {
     @Test
     public void testExtractLastCardStatus_returnsMostRecentStatus() {
         UserCardStatusEntity older = new UserCardStatusEntity();
-        older.setStatus(CardStatusEnum.PENDING);
+        older.setStatus(CardStatusEnum.IN_PROGRESS);
         older.setCreatedAt(Instant.now().minusSeconds(90000));
 
         UserCardStatusEntity newer = new UserCardStatusEntity();

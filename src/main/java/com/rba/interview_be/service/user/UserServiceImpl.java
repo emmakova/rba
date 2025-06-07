@@ -2,20 +2,16 @@ package com.rba.interview_be.service.user;
 
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
-import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
-import com.rba.interview_be.enums.CardStatusEnum;
-import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.mapper.UserMapper;
 import com.rba.interview_be.repository.UserRepository;
 import com.rba.interview_be.service.cardstatus.UserCardStatusService;
-import com.rba.interview_be.service.apiclients.NewCardRequestApiClient;
-import com.rba.interview_be.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.rba.interview_be.service.queryspecifications.UsersQueryPredicateService.getUsersQueryPredicates;
 
@@ -26,8 +22,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserCardStatusService userCardStatusService;
-    private final NewCardRequestApiClient newCardRequestApiClient;
 
+
+    @Override
+    public Optional<UserEntity> findById(Integer userId) {
+        return userRepository.findById(userId);
+    }
 
     @Override
     public List<UserEntity> searchUsers(SearchUserFilter searchUserFilter) {
@@ -51,12 +51,4 @@ public class UserServiceImpl implements UserService {
         });
     }
 
-    @Override
-    public UserEntity submitNewCardRequestForUser(Integer userId) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", userId)));
-        newCardRequestApiClient.submitNewCardRequestForUser(user);
-        UserCardStatusEntity newCardStatusForUser = userCardStatusService.createNewCardStatusForUser(user, CardStatusEnum.PENDING);
-        UserUtils.addCardStatusToUser(user, newCardStatusForUser);
-        return user;
-    }
 }

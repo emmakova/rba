@@ -42,13 +42,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping
-    @RequestMapping("/{userId}/new-card-request")
-    public ResponseEntity<UserDto> submitNewCardRequestForUser(@PathVariable Integer userId) {
-        return ResponseEntity.ok(
-                UserMapper.toDto(userService.submitNewCardRequestForUser(userId))
-        );
-
-    }
-
 }

@@ -5,7 +5,6 @@ import com.rba.interview_be.entities.UserEntity;
 import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.repository.UserCardStatusRepository;
 import com.rba.interview_be.service.cardstatus.UserCardStatusServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +45,7 @@ public class UserCardStatusServiceImplTest {
 
         when(userCardStatusRepository.save(any())).thenReturn(savedEntity);
 
-        UserCardStatusEntity result = service.createNewCardStatusForUser(user, status);
+        UserCardStatusEntity result = service.createStatus(user, status);
 
         verify(userCardStatusRepository).save(captor.capture());
         UserCardStatusEntity captured = captor.getValue();

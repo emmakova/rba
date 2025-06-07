@@ -2,15 +2,10 @@ package com.rba.interview_be.unit.service.user;
 
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.controller.filter.SearchUserFilter;
-import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
-import com.rba.interview_be.enums.CardStatusEnum;
-import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.repository.UserRepository;
-import com.rba.interview_be.service.apiclients.NewCardRequestApiClient;
 import com.rba.interview_be.service.cardstatus.UserCardStatusService;
 import com.rba.interview_be.service.user.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,23 +17,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
     @InjectMocks
-    private UserServiceImpl userService; // your actual service class
+    private UserServiceImpl userService;
 
     @Mock
     private UserRepository userRepository;
 
     @Mock
     private UserCardStatusService userCardStatusService;
-
-    @Mock
-    private NewCardRequestApiClient newCardRequestApiClient;
 
 
     @Test
@@ -94,37 +85,5 @@ public class UserServiceImplTest {
 
         verify(userCardStatusService, never()).deleteAllForUser(any());
         verify(userRepository, never()).deleteById(anyInt());
-    }
-
-    @Test
-    void submitNewCardRequestForUser_submitsRequestAndAddsCardStatus() {
-        int userId = 1;
-        UserEntity user = new UserEntity();
-        user.setId(userId);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        UserCardStatusEntity cardStatus = new UserCardStatusEntity();
-        cardStatus.setStatus(CardStatusEnum.PENDING);
-
-        when(userCardStatusService.createNewCardStatusForUser(user, CardStatusEnum.PENDING)).thenReturn(cardStatus);
-
-        UserEntity returnedUser = userService.submitNewCardRequestForUser(userId);
-
-        verify(newCardRequestApiClient).submitNewCardRequestForUser(user);
-        verify(userCardStatusService).createNewCardStatusForUser(user, CardStatusEnum.PENDING);
-
-        assertThat(returnedUser).isSameAs(user);
-    }
-
-    @Test
-    void submitNewCardRequestForUser_throwsNotFoundException_whenUserNotFound() {
-        int userId = 99;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> userService.submitNewCardRequestForUser(userId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("User with id 99 not found");
     }
 }

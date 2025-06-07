@@ -6,7 +6,7 @@ import com.rba.interview_be.enums.CardStatusEnum;
 
 public interface UserCardStatusService {
 
-    UserCardStatusEntity createNewCardStatusForUser(UserEntity userEntity, CardStatusEnum status);
+    UserCardStatusEntity createStatus(UserEntity user, CardStatusEnum status);
 
-    void deleteAllForUser(UserEntity u);
+    void deleteAllForUser(UserEntity user);
 }

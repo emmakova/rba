@@ -1,7 +1,6 @@
 package com.rba.interview_be.utils;
 
 import com.rba.interview_be.entities.UserCardStatusEntity;
-import com.rba.interview_be.entities.UserEntity;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;
@@ -19,10 +18,6 @@ public class UserUtils {
         return cardStatuses.stream()
                 .filter(Objects::nonNull).max(Comparator.comparing(UserCardStatusEntity::getCreatedAt))
                 .orElse(null);
-    }
-
-    public static void addCardStatusToUser(UserEntity userEntity, UserCardStatusEntity status){
-        userEntity.getCardStatuses().add(status);
     }
 
 }

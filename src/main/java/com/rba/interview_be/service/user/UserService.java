@@ -5,8 +5,11 @@ import com.rba.interview_be.controller.filter.SearchUserFilter;
 import com.rba.interview_be.entities.UserEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
+
+    Optional<UserEntity> findById(Integer userId);
 
     List<UserEntity> searchUsers(SearchUserFilter searchUserFilter);
 
@@ -14,5 +17,4 @@ public interface UserService {
 
     void deleteUserByOib(String oib);
 
-    UserEntity submitNewCardRequestForUser(Integer userId);
 }

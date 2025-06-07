@@ -1,9 +1,9 @@
 package com.rba.interview_be.mapper;
 
+import com.rba.interview_be.controller.dto.CardStatusDto;
 import com.rba.interview_be.controller.dto.UserDto;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
-import com.rba.interview_be.enums.CardStatusEnum;
 
 import java.util.Optional;
 
@@ -16,9 +16,20 @@ public class UserMapper {
             return null;
         }
 
-        CardStatusEnum lastCardStatus = Optional.ofNullable(extractLastCardStatus(user.getCardStatuses())).map(UserCardStatusEntity::getStatus).orElse(null);
+        CardStatusDto lastCardStatus = Optional.ofNullable(extractLastCardStatus(user.getCardStatuses()))
+                .map(CardStatusMapper::toDto).orElse(null);
 
         return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getOib(), lastCardStatus);
+    }
+
+    public static UserDto toDto(UserCardStatusEntity userCardStatusEntity) {
+        if (userCardStatusEntity == null) {
+            return null;
+        }
+
+        return new UserDto(userCardStatusEntity.getUser().getId(), userCardStatusEntity.getUser().getFirstName(),
+                userCardStatusEntity.getUser().getLastName(), userCardStatusEntity.getUser().getOib(), CardStatusMapper.toDto(userCardStatusEntity));
+
     }
 
     public static UserEntity toEntity(UserDto userDto) {

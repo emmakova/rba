@@ -18,7 +18,7 @@ public class UserCardStatusServiceImpl implements UserCardStatusService {
     private final UserCardStatusRepository userCardStatusRepository;
 
     @Override
-    public UserCardStatusEntity createNewCardStatusForUser(UserEntity userEntity, CardStatusEnum status) {
+    public UserCardStatusEntity createStatus(UserEntity userEntity, CardStatusEnum status){
         log.info("Creating status {} for user {}", status, userEntity.getId());
         UserCardStatusEntity userCardStatusEntity = new UserCardStatusEntity();
         userCardStatusEntity.setUser(userEntity);
