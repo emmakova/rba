@@ -35,8 +35,7 @@ public class UserController {
         );
     }
 
-    @DeleteMapping
-    @RequestMapping("/by-oib/{oib}")
+    @RequestMapping(value = "/by-oib/{oib}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteUser(@PathVariable String oib) {
         userService.deleteUserByOib(oib);
         return ResponseEntity.ok().build();
