@@ -9,70 +9,79 @@ import {
     List,
     ListItem,
     ListItemText,
-    MenuItem,
-    Select,
-    FormControl,
-    InputLabel,
     Box
 } from '@mui/material';
 import {Delete, Edit} from '@mui/icons-material';
 import UserDetailsDialog from "../../components/home/UserDetailsDialog";
+import {
+    CardStatusControllerApi, CardStatusDto,
+    CardStatusDtoCardStatusEnum,
+    Configuration,
+    UserControllerApi,
+    UserDto
+} from "../../api-client";
 
-const initialUsers = [
-    {id: 'user1', firstName: 'John', lastName: 'Doe', oib: '12345678901', cardStatus: 'REQUEST_NEW'},
-    {id: 'user2', firstName: 'Jane', lastName: 'Smith', oib: '10987654321', cardStatus: 'APPROVED'},
-];
 
-const statuses = ['REQUEST_NEW', 'IN_PROGRESS', 'FAILED', 'APPROVED', 'REJECTED', 'DELIVERED', 'ACTIVE', 'NON_ACTIVE', 'CANCELLED'];
+const config = new Configuration({
+    basePath: 'http://localhost:8080',
+});
+const userApi = new UserControllerApi(config);
+const cardStatusApi = new CardStatusControllerApi(config);
+
+const statuses: string[] = Object.values(CardStatusDtoCardStatusEnum);
 
 export default function HomePage() {
-    const [users, setUsers] = useState(initialUsers);
+    const [noUsersText, setNoUsersText] = useState('Try searching users by OIB to get some result');
+    const [users, setUsers] = useState<UserDto[]>([]);
     const [searchOib, setSearchOib] = useState('');
     const [newFirstName, setNewFirstName] = useState('');
     const [newLastName, setNewLastName] = useState('');
     const [newOib, setNewOib] = useState('');
-    const [newStatus, setNewStatus] = useState('');
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState<UserDto>(null);
+    const [selectedUserStatuses, setSelectedUserStatuses] = useState<CardStatusDto[]>([]);
 
-    const handleSearch = () => {
-        alert(`This would perform a REST request for userId: ${searchOib}`);
+
+    const handleSearch = async () => {
+        const response = await userApi.searchUsers({oib: searchOib});
+        const retrievedUsers = response.data;
+        setUsers(retrievedUsers)
+        retrievedUsers.length == 0 ? setNoUsersText('No users found :/') : setNoUsersText('')
     };
 
-    const handleAddUser = () => {
-        if (!newFirstName || !newLastName || !newOib || !newStatus) return;
-        const newUser = {
-            id: `${newFirstName.toLowerCase()}${newLastName.toLowerCase()}`,
+    const handleAddUser = async () => {
+        if (!newFirstName || !newLastName || !newOib) return;
+
+        const newUser: UserDto = {
             firstName: newFirstName,
             lastName: newLastName,
-            oib: newOib,
-            cardStatus: newStatus
+            oib: newOib
         };
-        setUsers([...users, newUser]);
+
+        const response = await userApi.createUser(newUser);
+
         setNewFirstName('');
         setNewLastName('');
         setNewOib('');
-        setNewStatus('');
     };
 
-    const handleDeleteUser = (id) => {
+    const handleDeleteUser = (oib) => {
         if (window.confirm("Are you sure you want to delete this user? This will delete the user and all card statuses!")) {
-            setUsers(users.filter(user => user.id !== id));
+            userApi.deleteUser(oib);
+            alert("User data deleted!");
         }
-    };
-
-
-    const handleUpdateStatus = () => {
-        setUsers(users.map(user =>
-            user.id === selectedUser.id ? {...user, status: newStatus} : user
-        ));
-        setStatusDialogOpen(false);
     };
 
     const handleOpenStatusDialog = (user) => {
         console.log("Opening dialog for user with id " + user.id)
         setSelectedUser(user);
         setStatusDialogOpen(true);
+    };
+
+    const handleCloseStatusDialog = () => {
+        setSelectedUser(null);
+        setSelectedUserStatuses([]);
+        setStatusDialogOpen(false);
     };
 
     const handleUpdateUser = (updatedUser) => {
@@ -82,8 +91,22 @@ export default function HomePage() {
         setSelectedUser(updatedUser);
     };
 
-    const handleAddStatus = (newStatus) => {
-        console.log("Add New status")
+    const handleAddStatus= async (newStatus) => {
+        console.log("Add New status ", newStatus, selectedUser.id);
+        const cardStatusRequest : CardStatusDto = {'userId': selectedUser.id, 'cardStatus': newStatus as CardStatusDtoCardStatusEnum};
+        const response = await cardStatusApi.createCardStatus(cardStatusRequest);
+        const allUserStatuses = response.data;
+        setSelectedUserStatuses(allUserStatuses);
+
+        const updatedUser = {
+            ...selectedUser,
+            lastCardStatus: allUserStatuses[0]
+        };
+
+        setSelectedUser(updatedUser);
+        setUsers((prev) =>
+            prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+        );
     };
 
 
@@ -96,15 +119,8 @@ export default function HomePage() {
                 <TextField label="Last Name" value={newLastName} onChange={e => setNewLastName(e.target.value)}
                            fullWidth size="small"/>
                 <TextField label="OIB" value={newOib} onChange={e => setNewOib(e.target.value)} fullWidth size="small"/>
-                <FormControl fullWidth size="small">
-                    <InputLabel>Status</InputLabel>
-                    <Select value={newStatus} onChange={e => setNewStatus(e.target.value)} label="Card Status">
-                        {statuses.map(status => (
-                            <MenuItem key={status} value={status}>{status}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Button variant="contained" disabled={!newFirstName || !newLastName || !newOib || !newStatus} onClick={handleAddUser}>Add</Button>
+                <Button variant="contained" disabled={!newFirstName || !newLastName || !newOib}
+                        onClick={handleAddUser}>Add</Button>
             </Box>
 
             <Box display="flex" gap={2} alignItems="center" mb={2}>
@@ -123,24 +139,26 @@ export default function HomePage() {
 
             <Card>
                 <CardContent>
-                    { users.length > 0 ?
+                    {users.length > 0 ?
                         (
                             <List>
                                 {users.map(user => (
                                     <ListItem key={user.id} secondaryAction={
                                         <>
-                                            <IconButton onClick={() => handleOpenStatusDialog(user)}><Edit/></IconButton>
-                                            <IconButton onClick={() => handleDeleteUser(user.id)}><Delete/></IconButton>
+                                            <IconButton
+                                                onClick={() => handleOpenStatusDialog(user)}><Edit/></IconButton>
+                                            <IconButton
+                                                onClick={() => handleDeleteUser(user.oib)}><Delete/></IconButton>
                                         </>
                                     }>
                                         <ListItemText primary={`${user.firstName} ${user.lastName}`}
-                                                      secondary={`OIB: ${user.oib} | Card status: ${user.cardStatus}`}/>
+                                                      secondary={`OIB: ${user.oib} | Card status: ${user.lastCardStatus?.cardStatus ?? '---'}`}/>
                                     </ListItem>
                                 ))}
                             </List>
-                        ): (
-                            <Typography variant="body1" color="textSecondary" align="center" sx={{ p: 2 }}>
-                                Search users to get result
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" align="center" sx={{p: 2}}>
+                                {noUsersText}
                             </Typography>
                         )
                     }
@@ -151,8 +169,9 @@ export default function HomePage() {
             {selectedUser && (
                 <UserDetailsDialog
                     open={statusDialogOpen}
-                    onClose={() => setStatusDialogOpen(false)}
+                    onClose={handleCloseStatusDialog}
                     user={selectedUser}
+                    userStatuses={selectedUserStatuses}
                     statuses={statuses}
                     onUpdateUser={handleUpdateUser}
                     onAddStatus={handleAddStatus}

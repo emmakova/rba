@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Dialog,
     DialogContent,
@@ -15,12 +15,21 @@ import {
     Box,
     Typography, Divider,
 } from '@mui/material';
+import {CardStatusDto} from "../../api-client";
 
-function UserDetailsDialog({ open, onClose, user, statuses, onUpdateUser, onAddStatus }) {
+function UserDetailsDialog({ open, onClose, user, userStatuses, statuses, onUpdateUser, onAddStatus }) {
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
     const [oib, setOib] = useState(user.oib);
     const [newStatus, setNewStatus] = useState('');
+
+    useEffect(() => {
+        if (user) {
+            setFirstName(user.firstName);
+            setLastName(user.lastName);
+            setOib(user.oib);
+        }
+    }, [user]);
 
     const handleUpdateUser = () => {
         onUpdateUser({
@@ -32,7 +41,7 @@ function UserDetailsDialog({ open, onClose, user, statuses, onUpdateUser, onAddS
     };
 
     const handleAddStatus = () => {
-        if (newStatus && !statuses.includes(newStatus)) {
+        if (newStatus) {
             onAddStatus(newStatus);
             setNewStatus('');
         }
@@ -84,7 +93,9 @@ function UserDetailsDialog({ open, onClose, user, statuses, onUpdateUser, onAddS
                                 label="New Status"
                                 size="small"
                             >
-                                <MenuItem value=""><em>None</em></MenuItem>
+                                {statuses.map(status => (
+                                    <MenuItem key={status} value={status}>{status}</MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <Button
@@ -96,10 +107,10 @@ function UserDetailsDialog({ open, onClose, user, statuses, onUpdateUser, onAddS
                         </Button>
                     </Box>
                     <List dense >
-                        {statuses.map((status) => (
-                            <ListItem key={status}>
-                                <ListItemText primary={status}
-                                              secondary={`2024-09-23 18:45:54`}/>
+                        {userStatuses.map((status : CardStatusDto) => (
+                            <ListItem key={status.id}>
+                                <ListItemText primary={status.cardStatus}
+                                              secondary={status.createdAt}/>
                             </ListItem>
                         ))}
                     </List>
