@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -16,6 +17,11 @@ import java.time.Instant;
 public class UserCardStatusServiceImpl implements UserCardStatusService {
 
     private final UserCardStatusRepository userCardStatusRepository;
+
+    @Override
+    public List<UserCardStatusEntity> findAllStatusesForUser(UserEntity userEntity){
+        return userCardStatusRepository.findAllByUserIdOrderByCreatedAtDesc(userEntity.getId());
+    }
 
     @Override
     public UserCardStatusEntity createStatus(UserEntity userEntity, CardStatusEnum status){

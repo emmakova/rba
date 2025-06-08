@@ -7,6 +7,7 @@ import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.service.cardstatus.handlers.CardStatusHandler;
 import com.rba.interview_be.service.user.UserService;
+import com.rba.interview_be.utils.UserCardStatusUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,13 @@ public class StatusHandlerService {
 
     public UserCardStatusEntity changeStatus(UserEntity userEntity, CardStatusEnum status) {
 
-        userCardStatusService.createStatus(userEntity, status);
+        UserCardStatusEntity createdStatus = userCardStatusService.createStatus(userEntity, status);
         UserCardStatusEntity result = new UserCardStatusEntity();
 
         getStatusHandler(status).ifPresent(handler -> handler.handle(userEntity, status, result));
-
+        if(result.getId() == null){
+            UserCardStatusUtils.cloneStatus(createdStatus, result);
+        }
         return result;
     }
 
