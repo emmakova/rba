@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.openapi.generator' version '7.5.0'
     id 'com.google.cloud.tools.jib' version '3.4.0'
+    id "com.github.node-gradle.node" version "5.0.0"
 }
 
 group = 'com.rba'
@@ -87,4 +88,43 @@ tasks.named("openApiGenerate").configure {
 
 tasks.named("compileJava").configure {
     dependsOn("openApiGenerate")
+}
+
+
+// --- Node plugin config for React frontend ---
+
+node {
+    version = '20.5.1'
+    npmVersion = '9.8.0'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+    nodeModulesDir = file("webapp")
+}
+tasks.register('npmRunBuild', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn(tasks.named('npmInstall'))
+    workingDir.set(file("webapp"))
+    args.set(['run', 'build'])
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn(tasks.named('npmRunBuild'))
+    from('webapp/dist')
+    into('src/main/resources/static')
+}
+
+tasks.named('processResources') {
+    dependsOn(tasks.named('copyFrontend'))
+}
+
+tasks.named('compileJava') {
+    dependsOn(tasks.named('copyFrontend'))
+}
+
+tasks.named('clean') {
+    doFirst {
+        delete file('webapp/node_modules')
+        delete file('webapp/build')
+        delete file('src/main/resources/static')
+    }
 }
