@@ -27,9 +27,9 @@ openApiGenerate {
     generatorName = 'java'
     inputSpec = openapiSpecFolder + "/new-card-request-openapi-spec.yaml"
     outputDir = generatedFilesOutputDir
-    apiPackage = 'com.example.api'
-    modelPackage = 'com.example.model'
-    invokerPackage = 'com.example.invoker'
+    apiPackage = 'com.something.api'
+    modelPackage = 'com.something.model'
+    invokerPackage = 'com.something.invoker'
     configOptions = [
             dateLibrary    : 'java8',
             library        : 'resttemplate',

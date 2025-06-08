@@ -1,8 +1,8 @@
 package com.rba.interview_be.service.apiclients;
 
-import com.example.api.NewCardRequestApi;
-import com.example.invoker.ApiClient;
-import com.example.model.NewCardRequest;
+import com.something.api.NewCardRequestApi;
+import com.something.invoker.ApiClient;
+import com.something.model.NewCardRequest;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
 import com.rba.interview_be.enums.CardStatusEnum;
