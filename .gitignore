@@ -37,3 +37,7 @@ out/
 .vscode/
 
 /webapp/node_modules/
+/webapp/src/api-client/
+/webapp/dist/
+
+src/main/resources/static
