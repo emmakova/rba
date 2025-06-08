@@ -6,10 +6,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication
 @EnableKafka
-public class InterviewBeApplication {
+public class RbaBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(InterviewBeApplication.class, args);
+		SpringApplication.run(RbaBackendApplication.class, args);
 	}
 
 }

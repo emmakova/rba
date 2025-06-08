@@ -1,6 +1,6 @@
 spring:
   application:
-    name: interview-be
+    name: rba-app
     default-time-zone: UTC
   jackson:
     time-zone: UTC
