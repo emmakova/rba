@@ -58,7 +58,7 @@ tasks.register('generateOpenApiRbaAppTypescriptClient', org.openapitools.generat
 tasks.register('copyOpenApiClientsToWebapp', Copy) {
     dependsOn 'generateOpenApiRbaAppTypescriptClient'
     from(generatedRbaAppClientOutputDir)
-    into("$rootDir/webapp/src/api-client")
+    into("$rootDir/webapp/src/api/clients")
 }
 
 tasks.named("generateOpenApiRbaAppTypescriptClient").configure {
@@ -156,6 +156,6 @@ tasks.named('clean') {
         delete file('webapp/node_modules')
         delete file('webapp/build')
         delete file('src/main/resources/static')
-        delete file('webapp/src/api-client')
+        delete file('webapp/src/api/clients')
     }
 }

@@ -13,20 +13,13 @@ import {
 } from '@mui/material';
 import {Delete, Edit} from '@mui/icons-material';
 import UserDetailsDialog from "../../components/home/UserDetailsDialog";
+import { userApi, cardStatusApi } from '../../api/apiClient';
 import {
-    CardStatusControllerApi, CardStatusDto,
+    CardStatusDto,
     CardStatusDtoCardStatusEnum,
-    Configuration,
-    UserControllerApi,
     UserDto
-} from "../../api-client";
+} from "../../api/clients";
 
-
-const config = new Configuration({
-    basePath: 'http://localhost:8080',
-});
-const userApi = new UserControllerApi(config);
-const cardStatusApi = new CardStatusControllerApi(config);
 
 const statuses: string[] = Object.values(CardStatusDtoCardStatusEnum);
 
