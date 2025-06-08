@@ -29,6 +29,6 @@ public class UserEntity {
     @Pattern(regexp = "\\d{11}")
     private String oib;
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserCardStatusEntity> cardStatuses = new ArrayList<>();
 }
