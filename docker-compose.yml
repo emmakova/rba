@@ -10,7 +10,6 @@ services:
       - ./wiremock/mappings:/home/wiremock/mappings
       - ./wiremock/__files:/home/wiremock/__files
 
-
   kafka:
     image: confluentinc/cp-kafka:latest
     hostname: kafka
@@ -41,3 +40,13 @@ services:
         kafka-topics --bootstrap-server localhost:9092 --create --topic card-status-topic --partitions 1 --replication-factor 1;
         wait
       "
+
+  rba-app:
+    image: rba-app:latest
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - wiremock
+      - kafka
