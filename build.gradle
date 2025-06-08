@@ -10,9 +10,6 @@ plugins {
 group = 'com.rba'
 version = '0.0.1-SNAPSHOT'
 
-def openapiSpecFolder = "$rootDir/src/main/resources/api/specifications"
-def generatedFilesOutputDir = layout.buildDirectory.dir("generated").get().asFile.path
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -23,10 +20,14 @@ repositories {
     mavenCentral()
 }
 
-openApiGenerate {
+def generatedFilesOutputDir = layout.buildDirectory.dir("generated").get().asFile.path
+
+def openapiSpecNewCardServiceFolder = "$rootDir/src/main/resources/api/specifications"
+def generatedNewCardServiceOutputDir = generatedFilesOutputDir + "/java-client/new-card-service-client"
+tasks.register('generateOpenApiNewCardServiceJavaClient', org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     generatorName = 'java'
-    inputSpec = openapiSpecFolder + "/new-card-request-openapi-spec.yaml"
-    outputDir = generatedFilesOutputDir
+    inputSpec = openapiSpecNewCardServiceFolder + "/new-card-request-openapi-spec.yaml"
+    outputDir = generatedNewCardServiceOutputDir
     apiPackage = 'com.something.api'
     modelPackage = 'com.something.model'
     invokerPackage = 'com.something.invoker'
@@ -36,6 +37,34 @@ openApiGenerate {
             useJakartaEe   : 'true',
             openApiNullable: 'false'
     ]
+}
+
+
+def openapiSpecRbaAppClientFolder = "$rootDir/webapp/api"
+def generatedRbaAppClientOutputDir = generatedFilesOutputDir + "/typescript-client/rba-app-api-client"
+tasks.register('generateOpenApiRbaAppTypescriptClient', org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn 'generateOpenApiNewCardServiceJavaClient'
+    generatorName = 'typescript-axios'
+    inputSpec = openapiSpecRbaAppClientFolder + "/openapi.json"
+    outputDir = generatedRbaAppClientOutputDir
+    apiPackage = 'api'
+    modelPackage = 'model'
+    configOptions = [
+            supportsES6             : 'true',
+            withSeparateModelsAndApi: 'true',
+    ]
+}
+
+tasks.register('copyOpenApiClientsToWebapp', Copy) {
+    dependsOn 'generateOpenApiRbaAppTypescriptClient'
+    from(generatedRbaAppClientOutputDir)
+    into("$rootDir/webapp/src/api-client")
+}
+
+tasks.named("generateOpenApiRbaAppTypescriptClient").configure {
+    doFirst {
+        delete generatedRbaAppClientOutputDir
+    }
 }
 
 dependencies {
@@ -63,7 +92,7 @@ jib {
         }
     }
     to {
-        image = 'my-app:latest'
+        image = 'rba-app:latest'
     }
     container {
         ports = ['8080']
@@ -77,17 +106,17 @@ tasks.named('test') {
 }
 
 // Include generated sources in compilation
-sourceSets.main.java.srcDir generatedFilesOutputDir + "/src/main/java"
+sourceSets.main.java.srcDir generatedNewCardServiceOutputDir + "/src/main/java"
 
 // Delete old generated files before generating
-tasks.named("openApiGenerate").configure {
+tasks.named("generateOpenApiNewCardServiceJavaClient").configure {
     doFirst {
-        delete generatedFilesOutputDir
+        delete generatedNewCardServiceOutputDir
     }
 }
 
 tasks.named("compileJava").configure {
-    dependsOn("openApiGenerate")
+    dependsOn("generateOpenApiNewCardServiceJavaClient")
 }
 
 
@@ -102,6 +131,7 @@ node {
     nodeModulesDir = file("webapp")
 }
 tasks.register('npmRunBuild', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn(tasks.named('copyOpenApiClientsToWebapp'))
     dependsOn(tasks.named('npmInstall'))
     workingDir.set(file("webapp"))
     args.set(['run', 'build'])
@@ -126,5 +156,6 @@ tasks.named('clean') {
         delete file('webapp/node_modules')
         delete file('webapp/build')
         delete file('src/main/resources/static')
+        delete file('webapp/src/api-client')
     }
 }
