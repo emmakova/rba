@@ -65,9 +65,10 @@ export default function HomePage() {
         }
     };
 
-    const handleOpenStatusDialog = (user) => {
-        console.log("Opening dialog for user with id " + user.id)
+    const handleOpenStatusDialog = async (user) => {
         setSelectedUser(user);
+        const response = await cardStatusApi.getCardStatusesForUser(user.id);
+        setSelectedUserStatuses(response.data);
         setStatusDialogOpen(true);
     };
 
@@ -77,15 +78,18 @@ export default function HomePage() {
         setStatusDialogOpen(false);
     };
 
-    const handleUpdateUser = (updatedUser) => {
+    const handleUpdateUser = async (updatedUser) => {
+        const response = await userApi.updateUser(updatedUser.id, updatedUser);
+        const savedUser = response.data;
+
         setUsers((prev) =>
-            prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+            prev.map((u) => (u.id === savedUser.id ? savedUser : u))
         );
-        setSelectedUser(updatedUser);
+
+        setSelectedUser(savedUser);
     };
 
     const handleAddStatus= async (newStatus) => {
-        console.log("Add New status ", newStatus, selectedUser.id);
         const cardStatusRequest : CardStatusDto = {'userId': selectedUser.id, 'cardStatus': newStatus as CardStatusDtoCardStatusEnum};
         const response = await cardStatusApi.createCardStatus(cardStatusRequest);
         const allUserStatuses = response.data;
