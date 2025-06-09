@@ -4,7 +4,6 @@ import com.rba.interview_be.controller.dto.CardStatusDto;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
 import com.rba.interview_be.enums.CardStatusEnum;
-import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.service.cardstatus.handlers.CardStatusHandler;
 import com.rba.interview_be.service.user.UserService;
 import com.rba.interview_be.utils.UserCardStatusUtils;
@@ -36,7 +35,7 @@ public class StatusHandlerService {
         UserCardStatusEntity result = new UserCardStatusEntity();
 
         getStatusHandler(status).ifPresent(handler -> handler.handle(userEntity, status, result));
-        if(result.getId() == null){
+        if (result.getId() == null) {
             UserCardStatusUtils.cloneStatus(createdStatus, result);
         }
         return result;

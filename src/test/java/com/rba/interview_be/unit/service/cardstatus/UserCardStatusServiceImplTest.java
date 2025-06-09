@@ -3,6 +3,7 @@ package com.rba.interview_be.unit.service.cardstatus;
 import com.rba.interview_be.entities.UserCardStatusEntity;
 import com.rba.interview_be.entities.UserEntity;
 import com.rba.interview_be.enums.CardStatusEnum;
+import com.rba.interview_be.exceptions.StatusUpdateException;
 import com.rba.interview_be.repository.UserCardStatusRepository;
 import com.rba.interview_be.service.cardstatus.UserCardStatusServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,6 +57,23 @@ public class UserCardStatusServiceImplTest {
         assertThat(captured.getCreatedAt()).isNotNull();
 
         assertThat(result).isEqualTo(savedEntity);
+    }
+
+    @Test
+    void createNewCardStatusForUser_shouldThrowStatusUpdateException() {
+        UserEntity user = new UserEntity();
+        user.setId(42);
+
+        CardStatusEnum status = CardStatusEnum.APPROVED;
+
+        UserCardStatusEntity lastCardStatusEntity = new UserCardStatusEntity();
+        lastCardStatusEntity.setUser(user);
+        lastCardStatusEntity.setStatus(status);
+        lastCardStatusEntity.setCreatedAt(Instant.now());
+
+        user.getCardStatuses().add(lastCardStatusEntity);
+
+        assertThrows(StatusUpdateException.class, () -> service.createStatus(user, status));
     }
 
     @Test
