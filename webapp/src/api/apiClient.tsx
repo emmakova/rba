@@ -3,7 +3,7 @@ import { Configuration, UserControllerApi, CardStatusControllerApi } from './cli
 
 
 const config = new Configuration({
-    basePath: 'http://localhost:8080',
+    basePath: import.meta.env.VITE_API_BASE_URL,
 });
 
 
