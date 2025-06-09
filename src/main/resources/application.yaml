@@ -27,7 +27,7 @@ spring:
     default-schema: RBA
     locations: classpath:db/migration
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:29092
     consumer:
       enabled: true
       topic: card-status-topic
@@ -40,6 +40,5 @@ spring:
         spring.json.value.default.type: com.rba.interview_be.service.cardstatus.consumer.CardStatusEvent
 
 
-
 new-card-request-api:
-  base-url: http://localhost:8089
+  base-url: http://wiremock:8080

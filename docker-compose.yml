@@ -9,6 +9,8 @@ services:
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
       - ./wiremock/__files:/home/wiremock/__files
+    networks:
+      - rba-network
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -22,11 +24,11 @@ services:
       KAFKA_PROCESS_ROLES: controller,broker  # Kafka acts as both broker and controller.
       KAFKA_NODE_ID: 1  # A unique ID for this Kafka instance.
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"  # Defines the controller voters.
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT_INTERNAL://0.0.0.0:29092,PLAINTEXT_EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_INTERNAL://kafka:29092,PLAINTEXT_EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LOG_DIRS: /var/lib/kafka/data  # Where Kafka stores its logs.
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"  # Kafka will automatically create topics if needed.
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  # Since we’re running one broker, one replica is enough.
@@ -40,6 +42,8 @@ services:
         kafka-topics --bootstrap-server localhost:9092 --create --topic card-status-topic --partitions 1 --replication-factor 1;
         wait
       "
+    networks:
+      - rba-network
 
   rba-app:
     image: rba-app:latest
@@ -50,3 +54,9 @@ services:
     depends_on:
       - wiremock
       - kafka
+    networks:
+      - rba-network
+
+networks:
+  rba-network:
+    driver: bridge
