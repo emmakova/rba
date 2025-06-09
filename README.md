@@ -33,5 +33,5 @@ To stop and clean up all running containers, use: `docker-compose down`
 
 ## 🛠️ Running the app only (dev profile)
 
-1. build the app using `./gradlew clean build -x test`
+1. build the app using `./gradlew clean build`; for skipping unit and integration tests add `./gradlew clean build -x test`
 2. start the app using `./gradlew bootRun --args='--spring.profiles.active=dev'`
