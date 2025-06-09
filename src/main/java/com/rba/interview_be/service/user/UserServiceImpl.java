@@ -7,9 +7,10 @@ import com.rba.interview_be.exceptions.NotFoundException;
 import com.rba.interview_be.mapper.UserMapper;
 import com.rba.interview_be.repository.UserRepository;
 import com.rba.interview_be.service.cardstatus.UserCardStatusService;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

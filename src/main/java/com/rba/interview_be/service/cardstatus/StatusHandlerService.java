@@ -7,9 +7,10 @@ import com.rba.interview_be.enums.CardStatusEnum;
 import com.rba.interview_be.service.cardstatus.handlers.CardStatusHandler;
 import com.rba.interview_be.service.user.UserService;
 import com.rba.interview_be.utils.UserCardStatusUtils;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
