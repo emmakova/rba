@@ -35,6 +35,13 @@ public class UserController {
         );
     }
 
+    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer userId, @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(
+                UserMapper.toDto(userService.updateUser(userId, userDto))
+        );
+    }
+
     @RequestMapping(value = "/by-oib/{oib}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteUser(@PathVariable String oib) {
         userService.deleteUserByOib(oib);

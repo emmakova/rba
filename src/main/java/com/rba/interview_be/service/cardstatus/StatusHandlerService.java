@@ -26,10 +26,8 @@ public class StatusHandlerService {
 
 
     public UserCardStatusEntity changeStatus(CardStatusDto cardStatusDto) {
-        return userService.findById(cardStatusDto.userId())
-                .map(u -> changeStatus(u, cardStatusDto.cardStatus()))
-                .orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", cardStatusDto.userId())));
-
+        UserEntity user = userService.findById(cardStatusDto.userId());
+        return changeStatus(user, cardStatusDto.cardStatus());
     }
 
     public UserCardStatusEntity changeStatus(UserEntity userEntity, CardStatusEnum status) {
