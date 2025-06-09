@@ -5,6 +5,7 @@ spring:
     username: sa
     password:
   kafka:
+    bootstrap-servers: localhost:9092
     consumers:
       card-status:
         enabled: true
