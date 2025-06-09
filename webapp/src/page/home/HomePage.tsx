@@ -21,17 +21,17 @@ import {
 } from "../../api/clients";
 
 
-const statuses: string[] = Object.values(CardStatusDtoCardStatusEnum);
+const statuses: CardStatusDtoCardStatusEnum[] = Object.values(CardStatusDtoCardStatusEnum);
 
 export default function HomePage() {
-    const [noUsersText, setNoUsersText] = useState('Try searching users by OIB to get some result');
+    const [noUsersText, setNoUsersText] = useState<string>('Try searching users by OIB to get some result');
     const [users, setUsers] = useState<UserDto[]>([]);
-    const [searchOib, setSearchOib] = useState('');
-    const [newFirstName, setNewFirstName] = useState('');
-    const [newLastName, setNewLastName] = useState('');
-    const [newOib, setNewOib] = useState('');
-    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<UserDto>(null);
+    const [searchOib, setSearchOib] = useState<string>('');
+    const [newFirstName, setNewFirstName] = useState<string>('');
+    const [newLastName, setNewLastName] = useState<string>('');
+    const [newOib, setNewOib] = useState<string>('');
+    const [statusDialogOpen, setStatusDialogOpen] = useState<boolean>(false);
+    const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
     const [selectedUserStatuses, setSelectedUserStatuses] = useState<CardStatusDto[]>([]);
 
 
@@ -58,16 +58,16 @@ export default function HomePage() {
         setNewOib('');
     };
 
-    const handleDeleteUser = (oib) => {
+    const handleDeleteUser = (oib : string) => {
         if (window.confirm("Are you sure you want to delete this user? This will delete the user and all card statuses!")) {
             userApi.deleteUser(oib);
             alert("User data deleted!");
         }
     };
 
-    const handleOpenStatusDialog = async (user) => {
+    const handleOpenStatusDialog = async (user : UserDto) => {
         setSelectedUser(user);
-        const response = await cardStatusApi.getCardStatusesForUser(user.id);
+        const response = await cardStatusApi.getCardStatusesForUser(user.id as number);
         setSelectedUserStatuses(response.data);
         setStatusDialogOpen(true);
     };
@@ -78,8 +78,8 @@ export default function HomePage() {
         setStatusDialogOpen(false);
     };
 
-    const handleUpdateUser = async (updatedUser) => {
-        const response = await userApi.updateUser(updatedUser.id, updatedUser);
+    const handleUpdateUser = async (updatedUser : UserDto) => {
+        const response = await userApi.updateUser(updatedUser.id as number, updatedUser);
         const savedUser = response.data;
 
         setUsers((prev) =>
@@ -89,8 +89,8 @@ export default function HomePage() {
         setSelectedUser(savedUser);
     };
 
-    const handleAddStatus= async (newStatus) => {
-        const cardStatusRequest : CardStatusDto = {'userId': selectedUser.id, 'cardStatus': newStatus as CardStatusDtoCardStatusEnum};
+    const handleAddStatus= async (newStatus : CardStatusDtoCardStatusEnum) => {
+        const cardStatusRequest : CardStatusDto = {'userId': selectedUser?.id, 'cardStatus': newStatus };
         const response = await cardStatusApi.createCardStatus(cardStatusRequest);
         const allUserStatuses = response.data;
         setSelectedUserStatuses(allUserStatuses);
@@ -145,7 +145,7 @@ export default function HomePage() {
                                             <IconButton
                                                 onClick={() => handleOpenStatusDialog(user)}><Edit/></IconButton>
                                             <IconButton
-                                                onClick={() => handleDeleteUser(user.oib)}><Delete/></IconButton>
+                                                onClick={() => handleDeleteUser(user.oib as string)}><Delete/></IconButton>
                                         </>
                                     }>
                                         <ListItemText primary={`${user.firstName} ${user.lastName}`}

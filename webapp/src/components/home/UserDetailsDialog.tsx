@@ -15,13 +15,23 @@ import {
     Box,
     Typography, Divider,
 } from '@mui/material';
-import {CardStatusDto} from "../../api-client";
+import {CardStatusDto, CardStatusDtoCardStatusEnum, UserDto} from "../../api/clients";
 
-function UserDetailsDialog({open, onClose, user, userStatuses, statuses, onUpdateUser, onAddStatus}) {
-    const [firstName, setFirstName] = useState(user.firstName);
-    const [lastName, setLastName] = useState(user.lastName);
-    const [oib, setOib] = useState(user.oib);
-    const [newStatus, setNewStatus] = useState('');
+export interface UserDetailsDialogProps {
+    open: boolean;
+    onClose: () => void;
+    user: UserDto;
+    userStatuses: CardStatusDto[];
+    statuses: CardStatusDtoCardStatusEnum[];
+    onUpdateUser: (updatedUser: UserDto) => void;
+    onAddStatus: (newStatus: CardStatusDtoCardStatusEnum) => void;
+}
+
+function UserDetailsDialog({open, onClose, user, userStatuses, statuses, onUpdateUser, onAddStatus} : UserDetailsDialogProps) {
+    const [firstName, setFirstName] = useState<string | undefined>(user.firstName);
+    const [lastName, setLastName] = useState<string | undefined>(user.lastName);
+    const [oib, setOib] = useState<string | undefined>(user.oib);
+    const [newStatus, setNewStatus] = useState<string>('');
 
     useEffect(() => {
         if (user) {
@@ -42,7 +52,7 @@ function UserDetailsDialog({open, onClose, user, userStatuses, statuses, onUpdat
 
     const handleAddStatus = () => {
         if (newStatus) {
-            onAddStatus(newStatus);
+            onAddStatus(newStatus as CardStatusDtoCardStatusEnum);
             setNewStatus('');
         }
     };
@@ -95,7 +105,7 @@ function UserDetailsDialog({open, onClose, user, userStatuses, statuses, onUpdat
                                 label="New Status"
                                 size="small"
                             >
-                                {statuses.map(status => (
+                                {statuses.map((status: CardStatusDtoCardStatusEnum) => (
                                     <MenuItem key={status} value={status}>{status}</MenuItem>
                                 ))}
                             </Select>
