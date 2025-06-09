@@ -21,7 +21,13 @@ public class CardStatusConsumer {
     @KafkaListener(topics = "${spring.kafka.consumer.topic}", groupId = "${spring.kafka.consumer.group-id}")
     public void consume(CardStatusEvent event) {
         log.info("Received CardStatusEvent: {}", event);
-        userRepository.findByOib(event.oib())
-                .ifPresent(u -> statusHandlerService.changeStatus(u, CardStatusEnum.valueOf(event.status())));
+        try {
+            userRepository.findByOib(event.oib())
+                    .ifPresent(u -> statusHandlerService.changeStatus(u, CardStatusEnum.valueOf(event.status())));
+        } catch (Exception ex){
+            log.info("There was an error processing event {} ", event);
+            log.error(ex.getMessage(), ex);
+            log.info("Sending failed event to DLQ/DLT");
+        }
     }
 }
