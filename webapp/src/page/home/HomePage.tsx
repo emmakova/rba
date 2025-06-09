@@ -58,9 +58,14 @@ export default function HomePage() {
         setNewOib('');
     };
 
-    const handleDeleteUser = (oib : string) => {
+    const handleDeleteUser = (user : UserDto) => {
         if (window.confirm("Are you sure you want to delete this user? This will delete the user and all card statuses!")) {
-            userApi.deleteUser(oib);
+            userApi.deleteUser(user.oib as string);
+            setSelectedUser(null);
+            setSelectedUserStatuses([]);
+            setUsers((prev) =>
+                prev.filter((u) => u.id !== user.id)
+            );
             alert("User data deleted!");
         }
     };
@@ -145,7 +150,7 @@ export default function HomePage() {
                                             <IconButton
                                                 onClick={() => handleOpenStatusDialog(user)}><Edit/></IconButton>
                                             <IconButton
-                                                onClick={() => handleDeleteUser(user.oib as string)}><Delete/></IconButton>
+                                                onClick={() => handleDeleteUser(user)}><Delete/></IconButton>
                                         </>
                                     }>
                                         <ListItemText primary={`${user.firstName} ${user.lastName}`}
