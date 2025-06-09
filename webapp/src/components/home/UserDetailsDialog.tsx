@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import {CardStatusDto} from "../../api-client";
 
-function UserDetailsDialog({ open, onClose, user, userStatuses, statuses, onUpdateUser, onAddStatus }) {
+function UserDetailsDialog({open, onClose, user, userStatuses, statuses, onUpdateUser, onAddStatus}) {
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
     const [oib, setOib] = useState(user.oib);
@@ -76,16 +76,18 @@ function UserDetailsDialog({ open, onClose, user, userStatuses, statuses, onUpda
                             size="small"
                         />
                         <Button
-                            size="small" variant="contained" disabled={firstName == user.firstName && lastName == user.lastName && user.oib == oib} onClick={handleUpdateUser}>Update</Button>
+                            size="small" variant="contained"
+                            disabled={firstName == user.firstName && lastName == user.lastName && user.oib == oib}
+                            onClick={handleUpdateUser}>Update</Button>
                     </Box>
                 </Box>
 
-                <Divider />
+                <Divider/>
 
                 <Box>
                     <Typography variant="h6" gutterBottom>Card statuses</Typography>
                     <Box display="flex" gap={2} alignItems="center" mt={1}>
-                        <FormControl style={{ minWidth: 200, flexGrow: 1 }}>
+                        <FormControl style={{minWidth: 200, flexGrow: 1}}>
                             <InputLabel>New Status</InputLabel>
                             <Select
                                 value={newStatus}
@@ -106,16 +108,22 @@ function UserDetailsDialog({ open, onClose, user, userStatuses, statuses, onUpda
                             Update
                         </Button>
                     </Box>
-                    <List dense >
-                        {userStatuses.map((status : CardStatusDto) => (
-                            <ListItem key={status.id}>
-                                <ListItemText primary={status.cardStatus}
-                                              secondary={status.createdAt}/>
-                            </ListItem>
-                        ))}
-                    </List>
-
-
+                    {userStatuses.length > 0 ?
+                        (
+                            <List dense>
+                                {userStatuses.map((status: CardStatusDto) => (
+                                    <ListItem key={status.id}>
+                                        <ListItemText primary={status.cardStatus}
+                                                      secondary={status.createdAt}/>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" align="center" sx={{p: 2}}>
+                                Users have no statuses
+                            </Typography>
+                        )
+                    }
                 </Box>
             </DialogContent>
 
